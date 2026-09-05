@@ -4,15 +4,15 @@
 Сутності: Product (товар), StockBatch (партія), Warehouse (склад), Movement (переміщення).
 Призначення: облік залишків товарів по партіях.
 ## Запуск 
-*dotnet build 
+* dotnet build 
 * dotnet run --project src/Cli 
-*dotnet run --project src/Cli -- --json
+* dotnet run --project src/Cli -- --json
 ## Середовище 
 .NET SDK 8.0, Windows 11 x64
 ## Порівняно розмір каталогів:
-*windows-x64 : 70.49 MB
-*linux-x64 : 70.51 MB
+* windows-x64 : 70.49 MB
+* linux-x64 : 70.51 MB
 ## Порівняно запуски:
-*Локальний запуск: Microsoft Windows 10.0.26200
-*Запуск в контейнері : Debian GNU/Linux 12 (bookworm)
+* Локальний запуск: Microsoft Windows 10.0.26200
+* Запуск в контейнері : Debian GNU/Linux 12 (bookworm)
 
