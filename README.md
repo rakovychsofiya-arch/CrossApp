@@ -8,10 +8,10 @@
 * dotnet run --project src/Cli 
 * dotnet run --project src/Cli -- --json
 ## Середовище 
-.NET SDK 8.0, Windows 11 x64
+.NET SDK 10.0, Windows 11 x64
 ## Порівняно розмір каталогів:
-* windows-x64 : 70.49 MB
-* linux-x64 : 70.51 MB
+* windows-x64 : 76.66 MB
+* linux-x64 : 78.79 MB
 ## Порівняно запуски:
 * Локальний запуск: Microsoft Windows 10.0.26200
 * Запуск в контейнері : Debian GNU/Linux 12 (bookworm)
