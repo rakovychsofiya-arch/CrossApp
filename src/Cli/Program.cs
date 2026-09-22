@@ -8,3 +8,4 @@
  Console.WriteLine($"RID (визначено): {report.DetectedRid}");
  Console.WriteLine($"RID (від .NET) : {report.ReportedRid}");
  Console.WriteLine($"Каталог : {report.BaseDirectory}");
+ Console.WriteLine($"Примітка збірки: {report.BuildNote}");
