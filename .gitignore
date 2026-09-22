@@ -184,7 +184,8 @@ DocProject/Help/html
 
 # Click-Once directory
 publish/
-
+pub-single
+pub-trimmed
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
