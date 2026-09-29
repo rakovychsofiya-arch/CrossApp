@@ -56,6 +56,7 @@ public static class ProductCsvImporter
             [var id, var sku, var name, var unit, var qty, var note, ..]
                 => new ParseOk(new ProductDto(id, sku, name, unit, int.Parse(qty, CultureInfo.InvariantCulture), string.IsNullOrWhiteSpace(note) ? null : note)),
             _ => new ParseFailed($"занадто багато колонок: {parts.Length}")
+            
         };
     }
 

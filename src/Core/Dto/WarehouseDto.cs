@@ -3,5 +3,6 @@ namespace Core.Dto;
 public record WarehouseDto(
     string Id,
     string Code,
-    string Address,
-    int Capacity);
+    string Name,
+    string City,
+    int Capacity): InventoryRecordDto;
