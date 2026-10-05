@@ -1,58 +1,33 @@
-﻿using Core.Dto;
-using Core.Import;
+﻿using Core.Domain;
 
-string path = args.Length > 0 ? args[0] : Path.Combine("data", "sample.csv");
+Console.WriteLine("=== Сценарій 1: Успішна робота з доменною моделлю ===");
+Product product = Product.Create("P-001", "sku-001", "Цемент М400 25кг", "шт", 100);
+Console.WriteLine($"Початковий стан: {product}");
 
-if (!File.Exists(path))
+product.RegisterArrival(50);
+Console.WriteLine($"Після приходу (+50): {product}");
+
+product.Issue(30);
+Console.WriteLine($"Після видачі (-30):  {product}");
+Console.WriteLine();
+
+Console.WriteLine("=== Сценарій 2: Порушення інваріантів ===");
+TryDo("Видача більша за залишок", () => product.Issue(1000));
+TryDo("Порожній SKU", () => Product.Create("P-002", "   ", "Пісок", "т", 10));
+TryDo("Від'ємний залишок при створенні", () => Product.Create("P-003", "SKU-003", "Цегла", "шт", -5));
+
+Console.WriteLine();
+Console.WriteLine($"Стан об'єкта після спроб порушення (не змінився): {product}");
+
+static void TryDo(string title, Action action)
 {
-    Console.WriteLine($"Файл не знайдено: {Path.GetFullPath(path)}");
-    return 1;
-}
-
-// 1. Вибір імпортера за назвою або розширенням файлу через switch expression
-ImportResult<InventoryRecordDto> result = Path.GetFileName(path).ToLowerInvariant() switch
-{
-    "mixed.csv" => MixedCsvImporter.Load(path),
-    _ => Path.GetExtension(path).ToLowerInvariant() switch
+    try
     {
-        ".csv" => AdaptResult(ProductCsvImporter.Load(path)),
-        ".json" => AdaptResult(ProductJsonImporter.Load(path)),
-        var ext => throw new NotSupportedException($"Розширення '{ext}' не підтримується")
+        action();
+        Console.WriteLine($"  [FAIL] {title}: виняток НЕ спрацював — інваріант відсутній!");
     }
-};
-
-// 2. Виведення даних із розпізнаванням конкретного типу запису
-Console.WriteLine($"Завантажено записів: {result.Items.Count}");
-foreach (InventoryRecordDto item in result.Items.Take(5))
-{
-    string display = item switch
+    catch (Exception ex)
     {
-        ProductDto p => $"  [Товар] {p.Id,-6} {p.Sku,-10} {p.Name,-24} {p.Quantity,5} {p.Unit}",
-        WarehouseDto w => $"  [Склад] {w.Id,-6} {w.Name,-30}",
-        _ => $"  [Невідомо] {item}"
-    };
-    Console.WriteLine(display);
-}
-
-// 3. Повідомлення про помилки
-if (result.Errors.Count > 0)
-{
-    Console.WriteLine($"Пропущено рядків: {result.Errors.Count}");
-    foreach (string e in result.Errors)
-    {
-        Console.WriteLine($"  ! {e}");
+        Console.WriteLine($"  [OK] {title}: {ex.GetType().Name} — {ex.Message}");
     }
 }
-
-// 4. Статистика імпорту одним рядком
-int total = result.Items.Count + result.Errors.Count;
-double errorPercent = total > 0 ? (double)result.Errors.Count / total * 100 : 0.0;
-
-Console.WriteLine("----------------------------------------------------------------------");
-Console.WriteLine($"Статистика: Усього: {total} | Прийнято: {result.Items.Count} | Пропущено: {result.Errors.Count} | Помилок: {errorPercent:F1}%");
-
-return 0;
-
-// Допоміжний метод приведення типізованого результату ProductDto до загального InventoryRecordDto
-static ImportResult<InventoryRecordDto> AdaptResult(ImportResult<ProductDto> res) =>
-    new(res.Items.Cast<InventoryRecordDto>().ToList(), res.Errors);

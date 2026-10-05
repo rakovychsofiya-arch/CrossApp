@@ -65,7 +65,7 @@ public static class MixedCsvImporter
                 => new ParseFailed($"Склад: місткість '{cap}' не є невід'ємним числом"),
 
             // Успішний розбір товару (ProductDto)
-            // Формат: P;id;sku;name;unit;quantity;[note]
+            // Формат: P;id;sku;name;unit;quantity;
             ["P" or "p", var id, var sku, var name, var unit, var qty]
                 => new ParseOk(new ProductDto(id, sku, name, unit, int.Parse(qty, CultureInfo.InvariantCulture))),
 
