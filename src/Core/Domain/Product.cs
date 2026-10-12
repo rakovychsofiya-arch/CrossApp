@@ -13,7 +13,7 @@ public sealed class Product
     public int Quantity => _quantity;
 
     // Приватний конструктор — створення можливе лише через фабричний метод Create
-    private Product(string id, string sku, string name, string unit, int quantity)
+    public Product(string id, string sku, string name, string unit, int quantity)
     {
         Id = id;
         Sku = sku;
