@@ -52,6 +52,12 @@ public sealed class FileCatalogStore(string path) : ICatalogStore
         EnsureLoaded();
         return _cache.GetValueOrDefault(id);
     }
+    public IEnumerable<Product> Find(Func<Product, bool> predicate)
+   {
+    ArgumentNullException.ThrowIfNull(predicate);
+    EnsureLoaded();
+    return _cache.Values.Where(predicate);
+    }
 
     public void Add(Product item)
     {
@@ -81,4 +87,5 @@ public sealed class FileCatalogStore(string path) : ICatalogStore
         Flush();
         return true;
     }
+
 }

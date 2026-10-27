@@ -11,6 +11,11 @@ public sealed class InMemoryCatalogStore(IEnumerable<Product>? seed = null) : IC
     public IReadOnlyList<Product> List() => _items.Values.ToList();
 
     public Product? GetById(string id) => _items.GetValueOrDefault(id);
+    public IEnumerable<Product> Find(Func<Product, bool> predicate)
+{
+    ArgumentNullException.ThrowIfNull(predicate);
+    return _items.Values.Where(predicate);
+}
 
     public void Add(Product item)
     {
