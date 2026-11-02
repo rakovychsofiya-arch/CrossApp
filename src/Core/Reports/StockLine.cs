@@ -1,4 +1,4 @@
-namespace Warehouse.Core.Reports;
+namespace Core.Reports;
 
 /// <summary>
 /// DTO для відображення рядка звіту по товарах.
