@@ -34,7 +34,7 @@ public sealed class CatalogService
         var product = Product.Create(Guid.NewGuid().ToString("N")[..8], sku, name, unit, quantity);
         _store.Add(product);
         
-        // Викликаємо подію ПІСЛЯ успішного додавання[cite: 3]
+        // Викликаємо подію ПІСЛЯ успішного додавання
         OnChanged(product, CatalogChangeKind.Added, quantity); 
         return product;
     }
@@ -52,7 +52,7 @@ public sealed class CatalogService
         OnChanged(product, CatalogChangeKind.Received, quantity);
     }
 
-    // Використання Func замість події, коли потрібно отримати результат (фільтрація)[cite: 4, 7]
+    // Використання Func замість події, коли потрібно отримати результат (фільтрація)
     public IReadOnlyList<Product> FindAll(Func<Product, bool> predicate) =>
         _store.List().Where(predicate).ToList();
 }
