@@ -102,3 +102,22 @@ public static IReadOnlyList<GroupSummary> ByUnitQuery(IEnumerable<Product> sourc
   dotnet test --collect:"XPlat Code Coverage"
 - Звичайний запуск імпорту:
   dotnet run --project src/Cli -- --file data/sample.json
+  ## Конфігурація (Лабораторна робота 9)
+
+Профілі: `Development` (за замовчуванням) та `Production` (через `CROSSAPP_ENVIRONMENT=Production`).
+
+| Ключ конфігурації | Опис | Значення за замовчуванням |
+| :--- | :--- | :--- |
+| `EnvironmentName` | Назва активного середовища | `Development` |
+| `Logging:MinimumLevel` | Мінімальний рівень логування | `Debug` (Dev) / `Information` (Prod) |
+| `Storage:DataPath` | Каталог збереження даних | `data` |
+| `Storage:FileName` | Ім'я JSON-файлу каталогу | `items.json` |
+| `Warehouse:DefaultUnit` | Одиниця виміру товарів за замовчуванням | `шт` |
+| `Integration:ApiKey` | Секретний ключ API (лише `user-secrets` або env) | *не задано у репозиторії* |
+
+### Приклади запуску зі змінними середовища
+**PowerShell:**
+```powershell
+$env:CROSSAPP_DATA_PATH = "C:\Temp\warehouse_data"
+$env:CROSSAPP_Integration__ApiKey = "prod-secret-key"
+dotnet run --project src/Cli -- export
