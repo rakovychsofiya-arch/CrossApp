@@ -1,44 +1,65 @@
 namespace Core.Storage;
-
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using Core.Abstractions;
 using Core.Domain;
 using Core.Dto;
 
-public sealed class FileCatalogStore(string path) : ICatalogStore
+public sealed class FileCatalogStore : ICatalogStore
 {
-    private static readonly JsonSerializerOptions Options = new() { WriteIndented = true };
-    private readonly Dictionary<string, Product> _cache = new(StringComparer.OrdinalIgnoreCase);
-    private readonly string _path = Path.GetFullPath(path);
+    private readonly string _path;
+    private readonly Dictionary<string, Product> _cache = new();
     private bool _loaded;
+
+    private static readonly JsonSerializerOptions Options = new()
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
+
+    public FileCatalogStore(string fullFilePath)
+    {
+        _path = fullFilePath;
+    }
 
     private void EnsureLoaded()
     {
         if (_loaded) return;
+        if (!File.Exists(_path))
+        {
+            _loaded = true;
+            return;
+        }
 
-        if (File.Exists(_path))
+        try
         {
             var json = File.ReadAllText(_path);
-            var dtos = JsonSerializer.Deserialize<List<ProductDto>>(json) ?? [];
+            var dtos = JsonSerializer.Deserialize<List<ProductDto>>(json, Options) ?? [];
+            _cache.Clear();
             foreach (var dto in dtos)
             {
-                var p = Product.FromDto(dto);
-                _cache[p.Id] = p;
+                var product = Product.FromDto(dto);
+                _cache[product.Id] = product;
             }
+            _loaded = true;
         }
-        _loaded = true;
+        catch (JsonException ex)
+        {
+            throw new InvalidOperationException($"Помилка читання JSON-файлу даних ({_path}): некоректний формат.", ex);
+        }
     }
 
     private void Flush()
     {
-        var directory = Path.GetDirectoryName(_path);
-        if (!string.IsNullOrEmpty(directory))
-        {
-            Directory.CreateDirectory(directory);
-        }
-
         var dtos = _cache.Values.Select(p => p.ToDto()).ToList();
-        File.WriteAllText(_path, JsonSerializer.Serialize(dtos, Options));
+        var dir = Path.GetDirectoryName(_path);
+        if (!string.IsNullOrEmpty(dir))
+            Directory.CreateDirectory(dir);
+
+        var tmp = _path + ".tmp";
+        File.WriteAllText(tmp, JsonSerializer.Serialize(dtos, Options));
+        File.Move(tmp, _path, overwrite: true);
     }
 
     public IReadOnlyList<Product> List()
